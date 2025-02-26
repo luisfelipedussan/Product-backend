@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
@@ -22,10 +22,12 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request)
+    public function store(ProductRequest $request): JsonResponse
     {
         $product = Product::create($request->validated());
-        return new ProductResource($product);
+        return (new ProductResource($product))
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
@@ -39,7 +41,7 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request, Product $product)
+    public function update(ProductRequest $request, Product $product): JsonResponse
     {
         $product->update($request->validated());
         return new ProductResource($product);
@@ -48,9 +50,9 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(Product $product): JsonResponse
     {
         $product->delete();
-        return response()->noContent();
+        return response()->json(null, 204);
     }
 }
