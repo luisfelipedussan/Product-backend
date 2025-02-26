@@ -7,6 +7,12 @@ class ApiService {
 
   setToken(token) {
     this.token = token;
+    localStorage.setItem('token', token);
+  }
+
+  clearToken() {
+    this.token = null;
+    localStorage.removeItem('token');
   }
 
   getHeaders() {
@@ -30,6 +36,9 @@ class ApiService {
         credentials: 'include'
       });
 
+      // Log para debugging
+      console.log('Request Headers:', this.getHeaders());
+      
       const data = await response.json();
 
       // Log para debugging
@@ -54,6 +63,25 @@ class ApiService {
       console.error('API Error:', error);
       throw error;
     }
+  }
+
+  // Métodos específicos
+  async login(credentials) {
+    const data = await this.request('/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials)
+    });
+    if (data.token) {
+      this.setToken(data.token);
+    }
+    return data;
+  }
+
+  async logout() {
+    await this.request('/logout', {
+      method: 'POST'
+    });
+    this.clearToken();
   }
 }
 
