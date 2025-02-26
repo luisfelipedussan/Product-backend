@@ -11,8 +11,8 @@ Route::get('test', function() {
 });
 
 // Public routes (no authentication needed)
-Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
