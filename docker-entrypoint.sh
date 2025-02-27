@@ -1,17 +1,22 @@
 #!/bin/bash
 
+# Configurar nginx para usar el puerto de Heroku
+sed -i "s/80/$PORT/g" /etc/nginx/conf.d/default.conf
+
 # Esperar a que MySQL esté listo
 echo "Waiting for MySQL to be ready..."
 while ! mysqladmin ping -h"$DB_HOST" --silent; do
     sleep 1
 done
 
-# Ejecutar migraciones y seeders
-echo "Running migrations..."
-php artisan migrate:fresh --force
+# Ejecutar migraciones
+php artisan migrate --force
 
-echo "Running seeders..."
+# Ejecutar seeders si es necesario
 php artisan db:seed --force
 
-# Iniciar el servidor
-php artisan serve --host=0.0.0.0 --port=8000 
+# Iniciar nginx
+nginx
+
+# Iniciar PHP-FPM
+php-fpm 

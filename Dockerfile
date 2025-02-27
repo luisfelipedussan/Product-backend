@@ -1,8 +1,11 @@
 FROM php:8.2-fpm
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 WORKDIR /var/www/html
 
+=======
+>>>>>>> 7634fdd94be1416cc55777d4e176f1cfff421b09
 =======
 >>>>>>> 7634fdd94be1416cc55777d4e176f1cfff421b09
 # Install system dependencies
@@ -14,8 +17,12 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
 <<<<<<< HEAD
+<<<<<<< HEAD
     unzip \
     default-mysql-client
+=======
+    unzip
+>>>>>>> 7634fdd94be1416cc55777d4e176f1cfff421b09
 =======
     unzip
 >>>>>>> 7634fdd94be1416cc55777d4e176f1cfff421b09
@@ -29,6 +36,7 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 # Copy composer files first to leverage Docker cache
 COPY composer.json composer.lock ./
@@ -61,6 +69,8 @@ RUN chown -R www-data:www-data /var/www/html/storage
 EXPOSE 8000
 CMD ["docker-entrypoint.sh"] 
 =======
+=======
+>>>>>>> 7634fdd94be1416cc55777d4e176f1cfff421b09
 # Set working directory
 WORKDIR /var/www
 
@@ -71,5 +81,9 @@ COPY . .
 RUN composer install
 
 # Set permissions
+<<<<<<< HEAD
+RUN chown -R www-data:www-data /var/www 
+>>>>>>> 7634fdd94be1416cc55777d4e176f1cfff421b09
+=======
 RUN chown -R www-data:www-data /var/www 
 >>>>>>> 7634fdd94be1416cc55777d4e176f1cfff421b09
