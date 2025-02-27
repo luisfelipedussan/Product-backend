@@ -1,0 +1,60 @@
+FROM php:8.2-fpm
+
+WORKDIR /var/www/html
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configure Git for longer timeouts
+RUN git config --global http.lowSpeedLimit 1000
+RUN git config --global http.lowSpeedTime 600
+
+# Set Composer timeout and other settings
+ENV COMPOSER_PROCESS_TIMEOUT=2000
+ENV COMPOSER_DISABLE_NETWORK=0
+ENV COMPOSER_MIRROR_PATH_REPOS=1
+
+# Copy composer files first to leverage Docker cache
+COPY composer.json composer.lock ./
+
+# Install dependencies with increased timeout and retries
+RUN composer install --no-scripts --no-autoloader --prefer-dist \
+    --no-interaction --no-progress \
+    --optimize-autoloader \
+    || composer install --no-scripts --no-autoloader --prefer-dist \
+    --no-interaction --no-progress \
+    --optimize-autoloader \
+    || composer install --no-scripts --no-autoloader --prefer-dist \
+    --no-interaction --no-progress \
+    --optimize-autoloader
+
+# Copy the rest of the application
+COPY . .
+
+# Run composer scripts and generate autoloader
+RUN composer dump-autoload --optimize
+
+# Generate key
+RUN php artisan key:generate
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html/storage
+
+EXPOSE 9000
+CMD ["php-fpm"] 
